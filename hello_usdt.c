@@ -46,7 +46,10 @@ hi
 [ perf record: Woken up 1 times to write data ]
 [ perf record: Captured and wrote 0.023 MB perf.data (2 samples) ]
 zhulei@zhulei-omv:~/workspace/linux-perf-playground$ sudo perf script
+上面每条记录依次的含义
+程序文件名 pid   不清楚 时间戳(秒)   消息名                 不清楚
 hello_usdt 26872 [001]  7207.380659: probe_hello_usdt:main: (560025c30135)
+触发消息时进程当时的堆栈
             560025c30135 main+0x0 (/home/zhulei/workspace/linux-perf-playground/hello_usdt)
         41fd89415541f689 [unknown] ([unknown])
 
