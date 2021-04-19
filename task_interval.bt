@@ -1,0 +1,32 @@
+#!/usr/bin/env bpftrace
+
+/*
+$ sudo bpftrace -e 'uprobe:/home/zhulei/workspace/linux-perf-playground/task_interval:do_task { printf("do a task:%d\n", arg0); }'
+*/
+
+BEGIN
+{
+    printf("Tracing the interval of tasks... Hit Ctrl-C to end.\n");
+    printf("%-6s %-4s\n", "TASKID", "MS");
+}
+
+uprobe:/home/zhulei/workspace/linux-perf-playground/task_interval:do_task
+{
+    @taskid = arg0;
+    @start = nsecs;
+}
+
+uretprobe:/home/zhulei/workspace/linux-perf-playground/task_interval:do_task
+{
+    if (@taskid) {
+        $interval = (nsecs - @start) / 1000000;
+        printf("%-6d %-4d\n", @taskid, $interval);
+        delete(@taskid);
+    }
+}
+
+END
+{
+    delete(@taskid);
+    delete(@start);
+}

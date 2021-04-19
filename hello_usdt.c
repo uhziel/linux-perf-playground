@@ -13,8 +13,8 @@ Displaying notes found in: .note.stapsdt
     Arguments:
 
 
-$ perf buildid-cache --add ./hello_usdt # 导入其中的 sdt events
-$ perf list | grep sdt_hello_usd
+$ sudo perf buildid-cache --add ./hello_usdt # 导入其中的 sdt events，这个也必须使用root身份执行，否则后面 perf probe sdt_hello_usdt:hi 会失败
+$ perf list | grep sdt_hello_usdt
   sdt_hello_usdt:hi                                  [SDT event]
 $ sudo perf probe sdt_hello_usdt:hi # 使用 sdt events 添加 probe
 $ sudo perf probe -vx /home/zhulei/workspace/linux-perf-playground/hello_usdt main # 使用函数名添加 uprobe
@@ -57,6 +57,18 @@ hello_usdt 26872 [001]  7207.380666:     sdt_hello_usdt:hi: (560025c30139)
             560025c30139 main+0x4 (/home/zhulei/workspace/linux-perf-playground/hello_usdt)
             7fcb9ac5c09b __libc_start_main+0xeb (/usr/lib/x86_64-linux-gnu/libc-2.28.so)
         41fd89415541f689 [unknown] ([unknown])
+ */
+
+/*
+bpftrace
+$ sudo bpftrace -l 'usdt:/home/zhulei/workspace/linux-perf-playground/hello_usdt'
+usdt:/home/zhulei/workspace/linux-perf-playground/hello_usdt:hello_usdt:hi
+$ sudo bpftrace -e 'usdt:/home/zhulei/workspace/linux-perf-playground/hello_usdt:hello_usdt:hi {@=comm}' -c './hello_usdt'
+Attaching 1 probe...
+hi
+
+
+@: hello_usdt
  */
 
 #include <sys/sdt.h>

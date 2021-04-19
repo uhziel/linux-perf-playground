@@ -49,18 +49,43 @@
  * 	perf record -e probe_task_interval:do_task_L2 -aR sleep 1
  */
 
+/*
+$ sudo bpftrace -l 'usdt:/home/zhulei/workspace/linux-perf-playground/task_interval'
+usdt:/home/zhulei/workspace/linux-perf-playground/task_interval:task_interval:enter_task
+usdt:/home/zhulei/workspace/linux-perf-playground/task_interval:task_interval:leave_task
+
+$ sudo bpftrace -e 'usdt:/home/zhulei/workspace/linux-perf-playground/task_interval:task_interval:* {@[probe]=count()}' -c './task_interval'
+Attaching 2 probes...
+task 1
+task 2
+task 3
+task 4
+task 5
+task 6
+task 7
+task 8
+^C
+
+@[usdt:/home/zhulei/workspace/linux-perf-playground/task_interval:task_interval:leave_task]: 7
+@[usdt:/home/zhulei/workspace/linux-perf-playground/task_interval:task_interval:enter_task]: 8
+ */
+
 #include <sys/sdt.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
 
 int do_task(int id) {
 	DTRACE_PROBE1(task_interval, enter_task, id);
 	printf("task %d\n", id);
-	sleep(1);
+	int sleep_time = rand() % 5;
+	sleep(sleep_time); // 随机睡眠一段时间，模拟工作负载
 	DTRACE_PROBE1(task_interval, leave_task, id);
 }
 
 int main() {
+	srand(time(NULL));
 	for (int i = 1; ; i++) {
 		do_task(i);
 	}
