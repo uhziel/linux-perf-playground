@@ -72,15 +72,23 @@ task 8
 
 #include <sys/sdt.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+
+int sum(int max) {
+	int r = 0;
+	for (int i = 1; i <= max; i++) {
+		r += i;
+	}
+
+	return r;
+}
 
 int do_task(int id) {
 	DTRACE_PROBE1(task_interval, enter_task, id);
 	printf("task %d\n", id);
-	int sleep_time = rand() % 5;
-	sleep(sleep_time); // 随机睡眠一段时间，模拟工作负载
+	int max = (rand() % 500000000) + 100000000;
+	sum(max);
 	DTRACE_PROBE1(task_interval, leave_task, id);
 }
 

@@ -8,6 +8,7 @@ BEGIN
 {
     printf("Tracing the interval of tasks... Hit Ctrl-C to end.\n");
     printf("%-6s %-4s\n", "TASKID", "MS");
+    //printf("%s,%s\n", "TASKID", "MS");
 }
 
 uprobe:/home/zhulei/workspace/linux-perf-playground/task_interval:do_task
@@ -21,6 +22,7 @@ uretprobe:/home/zhulei/workspace/linux-perf-playground/task_interval:do_task
     if (@taskid) {
         $interval = (nsecs - @start) / 1000000;
         printf("%-6d %-4d\n", @taskid, $interval);
+        //printf("%d %d\n", @taskid, $interval);
         delete(@taskid);
     }
 }
